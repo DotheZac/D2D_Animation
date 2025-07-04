@@ -181,15 +181,18 @@ void TestMainApp::Render()
    
     m_Renderer->RenderBegin();
 
-    //if (!m_selectedAssetKey.empty())
-    //{
-    //    ID2D1Bitmap1* bitMap = m_AssetManager.GetTexture(m_selectedAssetKey);
+    if (!m_selectedAssetKey.empty())
+    {
+        int xOffset = 200.f;
+        int yOffset = 100;
 
-    //    D2D1_RECT_F renderRect = D2D1::RectF(0, 0, 150, 150);
+        ID2D1Bitmap1* bitMap = m_AssetManager.GetTexture(m_selectedAssetKey);
 
-    //    m_Renderer->DrawBitmap(bitMap, renderRect);
+        D2D1_RECT_F renderRect = D2D1::RectF(xOffset, yOffset, xOffset + bitMap->GetSize().width, yOffset + bitMap->GetSize().height);
 
-    //}
+        m_Renderer->DrawBitmap(bitMap, renderRect);
+
+    }
 
     int count = m_curSprites.size();
     // 여러 애니메이션을 모두 보여주는 렌더링

@@ -14,7 +14,10 @@ void AssetManager::LoadTexture(sample::D2DRenderer* renderer, std::wstring keyWi
 
     if (outBitmap)
     {
-        m_textures[keyWide] = outBitmap;
+        Microsoft::WRL::ComPtr<ID2D1Bitmap1> bitmap;
+        bitmap.Attach(outBitmap); // 참조 관리 시작
+
+        m_textures[keyWide] = bitmap;
     }
 }
 
@@ -34,7 +37,7 @@ void AssetManager::LoadAseprite(sample::D2DRenderer* renderer, std::wstring keyW
         {               
             clip.second.SetBitmap(bitmap);
         }
-        m_clipsMap[keyWide] = clips;
+        m_clipsMap[keyWide] = std::move(clips);
     }
 }
 
