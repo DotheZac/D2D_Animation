@@ -181,59 +181,66 @@ void TestMainApp::Render()
    
     m_Renderer->RenderBegin();
 
-    if (!m_selectedAssetKey.empty())
-    {
-        int xOffset = 200.f;
-        int yOffset = 100;
-
-        ID2D1Bitmap1* bitMap = m_AssetManager.GetTexture(m_selectedAssetKey);
-
-        D2D1_RECT_F renderRect = D2D1::RectF(xOffset, yOffset, xOffset + bitMap->GetSize().width, yOffset + bitMap->GetSize().height);
-
-        m_Renderer->DrawBitmap(bitMap, renderRect);
-
-    }
 
     int count = m_curSprites.size();
     // 여러 애니메이션을 모두 보여주는 렌더링
     // 화면 중앙을 기준으로 애니메이션을 나열
     int animationIndex = 0;
-    for (auto& ap : m_curSprites)
+
+    if (!m_selectedAssetKey.empty())
     {
-        if (ap.IsValid() == false) continue; // 유효하지 않은 플레이어는 스킵
-
-        const Frame& frame = ap.GetCurrentFrame();
-
-        int xOffset = static_cast<float>(animationIndex * frame.Width()) + 200.f;
-        int yOffset = 300;
-       
-        D2D1_RECT_F renderRect = D2D1::RectF(xOffset, yOffset, xOffset + frame.Width(), yOffset + frame.Height());
-
-        auto bitmap = ap.GetClip()->GetBitmap();
-        if (bitmap == nullptr)
+        for (auto& ap : m_curSprites)
         {
-            std::cerr << "bitmap이 null입니다!" << std::endl;
+            if (ap.IsValid() == false) continue; // 유효하지 않은 플레이어는 스킵
+
+            const Frame& frame = ap.GetCurrentFrame();
+
+            int xOffset = static_cast<float>(animationIndex * frame.Width()) + 200.f;
+            int yOffset = 300;
+
+            D2D1_RECT_F renderRect = D2D1::RectF(xOffset, yOffset, xOffset + frame.Width(), yOffset + frame.Height());
+
+            auto bitmap = ap.GetClip()->GetBitmap();
+            //if (bitmap == nullptr)
+            //{
+            //    std::cerr << "bitmap이 null입니다!" << std::endl;
+            //}
+
+            //if (ap.GetClip() == nullptr)
+            //{
+            //    std::cerr << "GetClip() == nullptr" << std::endl;
+            //}
+
+            //auto srcRect = frame.ToRectF();
+            //if (srcRect.right <= srcRect.left || srcRect.bottom <= srcRect.top)
+            //{
+            //    std::cerr << "frame.ToRectF() 값이 잘못되었습니다" << std::endl;
+            //}
+
+            //if (renderRect.right <= renderRect.left || renderRect.bottom <= renderRect.top)
+            //{
+            //    std::cerr << "renderRect 값이 잘못되었습니다" << std::endl;
+            //}
+
+            m_Renderer->DrawBitmap(ap.GetClip()->GetBitmap(), renderRect, frame.ToRectF());
+
+            animationIndex++;
         }
 
-        if (ap.GetClip() == nullptr)
-        {
-            std::cerr << "GetClip() == nullptr" << std::endl;
-        }
 
-        auto srcRect = frame.ToRectF();
-        if (srcRect.right <= srcRect.left || srcRect.bottom <= srcRect.top)
-        {
-            std::cerr << "frame.ToRectF() 값이 잘못되었습니다" << std::endl;
-        }
+    }
+    if (!m_textureKey.empty())
+    {
+        int xOffset = 200.f;
+        int yOffset = 100;
 
-        if (renderRect.right <= renderRect.left || renderRect.bottom <= renderRect.top)
-        {
-            std::cerr << "renderRect 값이 잘못되었습니다" << std::endl;
-        }
+        ID2D1Bitmap1* bitMap = m_AssetManager.GetTexture(m_textureKey);
 
-        m_Renderer->DrawBitmap(ap.GetClip()->GetBitmap(), renderRect, frame.ToRectF());
+        D2D1_RECT_F renderRect = D2D1::RectF(xOffset, yOffset, xOffset + bitMap->GetSize().width, yOffset + bitMap->GetSize().height);
 
-        animationIndex++;
+        m_Renderer->DrawBitmap(bitMap, renderRect);
+
+
     }
 
     m_Renderer->RenderEnd(false);
@@ -365,12 +372,15 @@ void TestMainApp::LoadAssets()
     if (ext == L".png")
     {
         m_AssetManager.LoadTexture(m_Renderer.get(), keyWide, fullPath);
+        m_textureKey = keyWide;
+        m_selectedAssetKey.clear();
     }
 
     
     else if (ext == L".json")
     {
         m_AssetManager.LoadAseprite(m_Renderer.get(), keyWide, fullPath);
+        m_textureKey.clear();
     }
 
     m_bChangedFile = true; // 파일이 변경되었음을 표시

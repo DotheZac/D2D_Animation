@@ -55,6 +55,7 @@ private:
     std::wstring    m_selectedFile;
 
     std::wstring    m_selectedAssetKey;
+    std::wstring    m_textureKey;
 
     std::vector<SpriteAnimator> m_curSprites;
 
